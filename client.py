@@ -1,22 +1,26 @@
-import uwebsockets.client
+from machine import Pin 
 import os
+import uwebsockets.client
 
-def hello():
-    with uwebsockets.client.connect('ws://192.168.0.110:8000/ws/chat/gabriel/') as websocket:
 
-        uname = os.uname()
-        name = '{sysname} {release} {version} {machine}'.format(
-            sysname=uname.sysname,
-            release=uname.release,
-            version=uname.version,
-            machine=uname.machine,
-        )
-        
-        name = '{"message": "' + name + '"}'
-        websocket.send(name)
-        print("> {}".format(name))
+class NodeWebSocket():
+    def __init__(self):
+        self.uri = "ws://192.168.0.110:8000/ws/node/node_1/" 
+        self.response = ''
+        self.trigger = Pin(18, Pin.IN, Pin.PULL_UP)
+        self.trigger.irq(trigger=Pin.IRQ_FALLING, handler=self.sender)
+        self.listener()
 
-        greeting = websocket.recv()
-        print("< {}".format(greeting))
+    def sender(self, trigger):
+        message = '{"message": "' + str(self.trigger.value()) + '"}'  
+        self.ws.send(message)
+        print("mensagem enviada")
 
-hello()
+    def listener(self):
+        self.ws = uwebsockets.client.connect(self.uri)
+        while True:
+            self.response = self.ws.recv()
+            print(self.response)
+
+
+nodews = NodeWebSocket()
