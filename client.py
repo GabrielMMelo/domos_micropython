@@ -2,12 +2,18 @@ from machine import Pin
 import os
 import uwebsockets.client
 
+import settings
+
 
 class NodeWebSocket():
     def __init__(self):
-        self.uri = "ws://192.168.0.110:8000/ws/node/node_1/" 
+        self.uri = "ws://{}:{}/ws/node/node_{}/".format(
+                settings.SERVER_HOST,
+                settings.SERVER_PORT,
+                settings.NODE_ID)
+         
         self.response = ''
-        self.trigger = Pin(18, Pin.IN, Pin.PULL_UP)
+        self.trigger = Pin(settings.DEVICES[0], Pin.IN, Pin.PULL_UP)
         self.trigger.irq(trigger=Pin.IRQ_FALLING, handler=self.sender)
         self.listener()
 
