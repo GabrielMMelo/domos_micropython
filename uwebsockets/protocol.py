@@ -33,8 +33,10 @@ CLOSE_BAD_CONDITION = const(1011)
 URL_RE = re.compile(r'(wss|ws)://([A-Za-z0-9-\.]+)(?:\:([0-9]+))?(/.+)?')
 URI = namedtuple('URI', ('protocol', 'hostname', 'port', 'path'))
 
+
 class NoDataException(Exception):
     pass
+
 
 def urlparse(uri):
     """Parse ws:// URLs"""
@@ -113,14 +115,13 @@ class Websocket:
             data = self.sock.read(length)
         except MemoryError:
             # We can't receive this many bytes, close the socket
-            if __debug__: LOGGER.debug("Frame of length %s too big. Closing",
-                                       length)
+            if __debug__:
+                LOGGER.debug("Frame of length %s too big. Closing", length)
             self.close(code=CLOSE_TOO_BIG)
             return True, OP_CLOSE, None
 
         if mask:
-            data = bytes(b ^ mask_bits[i % 4]
-                         for i, b in enumerate(data))
+            data = bytes(b ^ mask_bits[i % 4] for i, b in enumerate(data))
 
         return fin, opcode, data
 
@@ -161,8 +162,7 @@ class Websocket:
             mask_bits = struct.pack('!I', random.getrandbits(32))
             self.sock.write(mask_bits)
 
-            data = bytes(b ^ mask_bits[i % 4]
-                         for i, b in enumerate(data))
+            data = bytes(b ^ mask_bits[i % 4] for i, b in enumerate(data))
 
         self.sock.write(data)
 
