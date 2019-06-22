@@ -4,13 +4,34 @@ import json
 from machine import Pin
 import uwebsockets.client
 
+from mac import get_mac
+
 ID_DEVICE = 1
 WORK_PIN = 18
 
-websocket = uwebsockets.client.connect(
-    'ws://192.168.0.109:8000/ws/device/{}/'.format(ID_DEVICE))
+try:
+    f = open('mac')
+    mac = f.read()
+    print("mac", mac)
+    f.close()
+except OSError:
+    mac = None
+
+websocket = False
+while not websocket:
+    try:
+        websocket = uwebsockets.client.connect(
+            'ws://192.168.0.110:8000/ws/device/{}/'.format(ID_DEVICE))
+    except OSError:
+        websocket = False
 
 # TODO: timer interrupt to send periodic updates to server
+
+if mac is None:
+    mac = get_mac()
+    print("mac novo:", mac)
+    message = {'mac': mac}
+    websocket.send(json.dumps(message))
 
 
 # Interrupt handler
