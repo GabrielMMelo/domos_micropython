@@ -6,9 +6,9 @@ import uwebsockets.client
 
 from mac import get_mac
 
-ID_DEVICE = 1
-SWITCH = [18]
-ACTOR = [19]
+ID_DEVICE = 1  # device's identifier
+SWITCH = [18]  # pin ports which handle physical switch changes
+ACTOR = [19]  # pin ports which properly toggle the state of the peripherics
 
 try:
     f = open('mac')
@@ -26,20 +26,18 @@ while not websocket:
     except OSError:
         websocket = False
 
-# TODO: timer interrupt to send periodic updates to server
-
 if mac is None:
     mac = get_mac()
     print("mac novo:", mac)
     message = {'mac': mac}
     websocket.send(json.dumps(message))
 
-# use list compreheension
-switches = [Pin(SWITCH[0], Pin.IN, Pin.PULL_UP)]
-actors = [Pin(ACTOR[0], Pin.OUT)]
+switches = [Pin(switch, Pin.IN, Pin.PULL_UP) for switch in SWITCH]
+actors = [Pin(actor, Pin.OUT) for actor in ACTOR]
 
 
-# Interrupt handler
+# Interrupt handlers
+# TODO: make it scalable
 def toggle_mode_0(toggler):  # Change de name to port specific name
     if toggler.value() != actors[0].value():
         print("Interrupção! Valor do pino:", toggler.value())
@@ -49,8 +47,9 @@ def toggle_mode_0(toggler):  # Change de name to port specific name
         websocket.send(json.dumps(message))
 
 
-switches[0].irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING,
-                handler=toggle_mode_0)
+for switch in switches:
+    switch.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=toggle_mode_0)
+    # TODO: make it scalable
 
 
 def wait_4_messages():
@@ -58,6 +57,7 @@ def wait_4_messages():
         message = websocket.recv()
         try:
             state = int(json.loads(message)['state'])
+            # TODO: make it scalable
             if state != int(actors[0].value()):
                 print("Message (from ws):", state)
                 print("Pin value:", actors[0].value())
