@@ -4,12 +4,12 @@ import json
 from machine import Pin
 import uwebsockets.client
 
-from mac import get_mac
+# from mac import get_mac
 
 ID_DEVICE = 1  # device's identifier
 SWITCH = [18]  # pin ports which handle physical switch changes
 ACTOR = [19]  # pin ports which properly toggle the state of the peripherics
-
+"""
 try:
     f = open('mac')
     mac = f.read()
@@ -17,6 +17,7 @@ try:
     f.close()
 except OSError:
     mac = None
+"""
 
 websocket = False
 while not websocket:
@@ -25,12 +26,13 @@ while not websocket:
             'ws://192.168.0.113:8000/ws/device/{}/'.format(ID_DEVICE))
     except OSError:
         websocket = False
-
+"""
 if mac is None:
     mac = get_mac()
     print("mac novo:", mac)
     message = {'mac': mac}
     websocket.send(json.dumps(message))
+"""
 
 switches = [Pin(switch, Pin.IN, Pin.PULL_UP) for switch in SWITCH]
 actors = [Pin(actor, Pin.OUT) for actor in ACTOR]
