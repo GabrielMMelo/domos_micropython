@@ -1,5 +1,6 @@
 import gc
 import json
+import urequests as requests
 from machine import Pin
 
 import uwebsockets.client
@@ -17,7 +18,7 @@ test = {
     "HOST": "gabrielmelo.ddns.net:8081",
     "SSID": "zezinho",
     "PASSWD_NET": "JoseAnjo43",
-    "LOGIN": "admin",
+    "USERNAME": "admin",
     "PASSWD": "@admin03OTM",
 }
 
@@ -25,6 +26,7 @@ write_settings(test)
 '''
 
 settings = read_settings()
+print("SETTINGS", settings)
 
 ID_DEVICE = 1  # device's identifier
 
@@ -39,6 +41,21 @@ output_pin = Pin(OUTPUT_PIN, Pin.OUT)
 # 1º realizar login e guardar o token
 # 2º Enviar requisicao no endpoint da api para criar o device, se nao existir
 # 3º receber resposta da api com o id do device atual
+
+def login():
+    global token
+
+    url = 'http://' + settings["HOST"] + '/api/v1/auth/login/'
+    data = {
+        "username": settings["USERNAME"],
+        "password": settings["PASSWD"]
+    }
+    headers = {
+        "content-type": 'application/json'
+    }
+    r = requests.post(url=url, headers=headers, json=data)
+    token = r.json()["key"]
+
 
 
 def connect_ws():
@@ -95,5 +112,7 @@ def wait_4_messages():
 
 int_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=toggle_state)
 
+login()
+print("TOKEN", token)
 connect_ws()
 wait_4_messages()
