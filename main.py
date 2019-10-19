@@ -4,10 +4,12 @@ import urequests as requests
 from machine import Pin
 
 import uwebsockets.client
+import picoweb
 
 from constants import (
     OUTPUT_PIN,
     INT_PIN,
+    MODE_PIN,
     MAC_ADDRESS,
 )
 
@@ -19,11 +21,32 @@ test = {
     "SSID": "zezinho",
     "PASSWD_NET": "JoseAnjo43",
     "USERNAME": "admin",
-    "PASSWD": "@admin03OTM",
+    "PASSWORD": "@admin03OTM",
 }
 
 write_settings(test)
 '''
+
+app = picoweb.WebApp(__name__)
+
+@app.route("/")
+def index(req, resp):
+    yield from picoweb.start_response(resp)
+    yield from app.render_template(resp, "index.tpl", (req,))
+
+@app.route("/confirmacao")
+def index(req, resp):
+    yield from picoweb.start_response(resp)
+    if req.method == "POST":
+        yield from req.read_form_data()
+        settings["USERNAME"] = req.form["username"]
+        settings["PASSWORD"] = req.form["password"]
+
+        write_settings(settings)
+        yield from app.render_template(resp, "confirmation.tpl", args=(req,))
+
+    else:
+        yield from app.render_template(resp, "404.tpl")
 
 settings = read_settings()
 print("SETTINGS", settings)
@@ -32,6 +55,7 @@ websocket = False
 token = None
 device_id = None
 
+mode_pin = Pin(MODE_PIN, Pin.IN, Pin.PULL_UP)
 int_pin = Pin(INT_PIN, Pin.IN, Pin.PULL_UP)
 output_pin = Pin(OUTPUT_PIN, Pin.OUT) 
 
@@ -42,7 +66,7 @@ def login():
     url = 'http://' + settings["HOST"] + '/api/v1/auth/login/'
     data = {
         "username": settings["USERNAME"],
-        "password": settings["PASSWD"]
+        "password": settings["PASSWORD"]
     }
     headers = {
         "content-type": 'application/json'
@@ -131,7 +155,7 @@ def wait_4_messages():
             state = int(json.loads(message)['state'])
             if state != int(output_pin.value()):
                 print("Message (from ws):", state)
-                print("Pin value:", output_pin.value())
+                print("Old pin value:", output_pin.value())
                 output_pin.value(state)
         except TypeError:  # needed to avoid None return while interrupt handler is working
             pass
@@ -139,11 +163,17 @@ def wait_4_messages():
 
 int_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=toggle_state)
 
-while not login():
-    pass
-print("TOKEN", token)
-while not get_device_id():
-    pass
-print("Device id", device_id)
-connect_ws()
-wait_4_messages()
+if mode_pin.value():
+    print("### WEBSERVER MODE ###")
+    app.run(debug=True, host='0.0.0.0')
+
+else:
+    print("### WEBSERVER MODE ###")
+    while not login():
+        pass
+    print("TOKEN", token)
+    while not get_device_id():
+        pass
+    print("Device id", device_id)
+    connect_ws()
+    wait_4_messages()
