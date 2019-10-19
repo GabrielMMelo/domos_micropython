@@ -28,21 +28,15 @@ write_settings(test)
 settings = read_settings()
 print("SETTINGS", settings)
 
-ID_DEVICE = 1  # device's identifier
-
 websocket = False
 token = None
-id_device = None
+device_id = None
 
 int_pin = Pin(INT_PIN, Pin.IN, Pin.PULL_UP)
 output_pin = Pin(OUTPUT_PIN, Pin.OUT) 
 
-# TODO:
-# 1º realizar login e guardar o token
-# 2º Enviar requisicao no endpoint da api para criar o device, se nao existir
-# 3º receber resposta da api com o id do device atual
-
 def login():
+    """ Log in through the REST api and get the valid token """
     global token
 
     url = 'http://' + settings["HOST"] + '/api/v1/auth/login/'
@@ -53,24 +47,57 @@ def login():
     headers = {
         "content-type": 'application/json'
     }
-    r = requests.post(url=url, headers=headers, json=data)
+    try:
+        r = requests.post(url=url, headers=headers, json=data)
+    except Exception as e:
+        # print(e)
+        return False
     token = r.json()["key"]
+    return True
 
+def get_device_id():
+    """ 
+    Get the device id from the given user (token) and mac address from the REST api.
+    If the device doesnt exists, it will be created and its id returned too.
+    """
+    global device_id
+    global token
+
+    url = 'http://' + settings["HOST"] + '/api/v1/device/'
+    data = {
+        "mac": MAC_ADDRESS,
+        "name": settings.get("DVC_NAME", 'Generic')
+    }
+
+    headers = {
+        "content-type": 'application/json',
+        "Authorization": 'Token ' + token
+    }
+
+    try:
+        r = requests.post(url=url, headers=headers, json=data)
+    except Exception as e:
+        # print(e)
+        return False
+    device_id = r.json()["id"]
+    return True
 
 
 def connect_ws():
     global websocket
+    global device_id
+    global token
 
     websocket = False
     while not websocket:
         try:
             websocket = uwebsockets.client.connect(
-                'ws://' + settings['HOST'] + '/ws/device/{}/'.format(ID_DEVICE)
+                'ws://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
             )
 
             message = {
                 'state': output_pin.value(),
-                'token': "f6a981aa1a7fd050454afd5f4d4a030f20b6152c"
+                'token': token
             }
 
             websocket.send(json.dumps(message))  # send message when connect to be authenticated
@@ -112,7 +139,11 @@ def wait_4_messages():
 
 int_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=toggle_state)
 
-login()
+while not login():
+    pass
 print("TOKEN", token)
+while not get_device_id():
+    pass
+print("Device id", device_id)
 connect_ws()
 wait_4_messages()
