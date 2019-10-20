@@ -9,7 +9,7 @@
             .container {
                 width: 50%;
                 margin: 0 auto;
-                margin-top: 200px!important;
+                margin-top: 100px!important;
             }
 
             #data {
@@ -106,6 +106,8 @@
 
             .progressBar li.active {
                 color: #001d68;
+                font-weight: bold;
+                font-size: 22px;
             }
 
             .progressBar li.active:before {
@@ -123,8 +125,9 @@
     <body>
         <div class="container" style="color: white;">
             <center>
-                <h1 style="color: white;">Login com sucesso!</h1>
+                <h1 style="color: white;">Login realizado com sucesso! Seu dispositivo está pronto para uso.</h1>
                 <h3 style="color: white;">Configure o seletor para a posição 'Ativo' e reinicie o sistema</h3>
+                <h3 style="color: white;">Ou <a href="/">configure novamente</a> caso alguma informação esteja incorreta</h3>
                 <h4 style="color: white;">Seus dados:</h4>
                 <table id="data">
                     <tr>

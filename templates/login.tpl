@@ -10,7 +10,7 @@
             .container {
                 width: 50%;
                 margin: 0 auto;
-                margin-top: 200px!important;
+                margin-top: 100px!important;
             }
 
             .form-contact {
@@ -104,6 +104,8 @@
 
             .progressBar li.active {
                 color: #001d68;
+                font-weight: bold;
+                font-size: 22px;
             }
 
             .progressBar li.active:before {
@@ -121,7 +123,7 @@
     </head>
     <body>
         <div class="container">
-            <form action="/success" class="form-contact" method="post" tabindex="1">
+            <form action="/finish" class="form-contact" method="post" tabindex="1">
                 <input type="text" class="form-contact-input" name="host" value="gabrielmelo.ddns.net:8081" placeholder="Host (e.g., 'www.domopen.net:8081')" required />
                 <input type="text" class="form-contact-input" name="username" placeholder="Nome de usuário" required />
                 <input type="password" class="form-contact-input" name="password" placeholder="Senha" required />

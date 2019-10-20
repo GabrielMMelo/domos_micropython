@@ -49,8 +49,9 @@ def index(req, resp):
     else:
         yield from app.render_template(resp, "404.tpl")
 
-@app.route("/success")
+@app.route("/finish")
 def index(req, resp):
+    global settings
     yield from picoweb.start_response(resp)
     if req.method == "POST":
         yield from req.read_form_data()
@@ -60,7 +61,13 @@ def index(req, resp):
 
         write_settings(settings)
 
-        yield from app.render_template(resp, "success.tpl", args=(settings,))
+        if login():
+            print("Login realizado com sucesso", token)
+            yield from app.render_template(resp, "finish.tpl", args=(settings,))
+        else:
+            error = "login"
+            yield from app.render_template(resp, "error.tpl", args=(error,))
+
 
     else:
         yield from app.render_template(resp, "404.tpl")
@@ -90,10 +97,10 @@ def login():
     }
     try:
         r = requests.post(url=url, headers=headers, json=data)
+        token = r.json()["key"]
     except Exception as e:
         # print(e)
         return False
-    token = r.json()["key"]
     return True
 
 def get_device_id():
