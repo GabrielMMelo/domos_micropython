@@ -1,5 +1,6 @@
 import gc
 import json
+import time
 import urequests as requests
 from machine import Pin
 
@@ -49,8 +50,7 @@ def index(req, resp):
         STA.connect()
         STA.configure(settings["SSID"], settings["SSID_PASSWORD"])
 
-        # try to connect to sta and test connection
-        # TODO: a delay here?
+        time.sleep(5)
 
         if STA.is_connected():
             yield from app.render_template(resp, "login.tpl", args=(req,))
