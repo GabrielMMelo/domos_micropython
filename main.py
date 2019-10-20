@@ -32,18 +32,35 @@ app = picoweb.WebApp(__name__)
 @app.route("/")
 def index(req, resp):
     yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "index.tpl", (req,))
+    yield from app.render_template(resp, "index.tpl", args=(req,))
 
-@app.route("/confirmacao")
+@app.route("/login")
 def index(req, resp):
     yield from picoweb.start_response(resp)
     if req.method == "POST":
         yield from req.read_form_data()
+        settings["SSID"] = req.form["ssid"]
+        settings["SSID_PASSWORD"] = req.form["password"]
+
+        write_settings(settings)
+
+        yield from app.render_template(resp, "login.tpl", args=(req,))
+
+    else:
+        yield from app.render_template(resp, "404.tpl")
+
+@app.route("/success")
+def index(req, resp):
+    yield from picoweb.start_response(resp)
+    if req.method == "POST":
+        yield from req.read_form_data()
+        settings["HOST"] = req.form["host"]
         settings["USERNAME"] = req.form["username"]
         settings["PASSWORD"] = req.form["password"]
 
         write_settings(settings)
-        yield from app.render_template(resp, "confirmation.tpl", args=(req,))
+
+        yield from app.render_template(resp, "success.tpl", args=(settings,))
 
     else:
         yield from app.render_template(resp, "404.tpl")
@@ -165,7 +182,8 @@ int_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=toggle_state)
 
 if mode_pin.value():
     print("### WEBSERVER MODE ###")
-    app.run(debug=True, host='0.0.0.0')
+    # TODO: iniciar AP MODE
+    app.run(debug=True, host='0.0.0.0', port='80')
 
 else:
     print("### WEBSERVER MODE ###")

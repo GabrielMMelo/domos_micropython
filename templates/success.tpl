@@ -1,39 +1,41 @@
-{% args req %}
-<html lang="pt">
+{% args settings %}
+<html>
     <head>
         <style rel="stylesheet" type="text/css">
             body{
                 background-color: #5382e8;
                 font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
             }
-
             .container {
                 width: 50%;
                 margin: 0 auto;
                 margin-top: 200px!important;
             }
 
-            .form-contact {
+            #data {
+                border-collapse: collapse;
                 width: 100%;
             }
 
-            .form-contact-input {
-                width: 100%;
-                color: #292929;
-                font-size: 18px;
-                background-color: #E9E9E9;
-                border: 1px solid #E9E9E9;
-                -moz-border-radius: 5px;
-                -webkit-border-radius: 5px;
-                border-radius: 5px;
-                height: 40px;
-                margin-bottom: 20px;
-                border-bottom: 1px solid #ccc;
-                border-left: 1px solid #ccc;
-                text-indent: 20px;
+            #data td, #data th {
+                border: 1px solid #ddd;
+                padding: 8px;
             }
 
-            .form-button {
+            #data tr{background-color: #f2f2f2;}
+
+            #data tr:hover {background-color: #ddd;}
+
+            #data th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #001d68;
+                color: white;
+            }
+
+            .confirm-button {
+                margin-top: 30px;
                 width: 100%;
                 font-size: 18px;
                 border-radius: 4px;
@@ -50,7 +52,7 @@
                 transition: 1s;
             }
 
-            .form-button:hover {
+            .confirm-button:hover {
                 opacity: 1;
             }
 
@@ -117,23 +119,44 @@
         </style>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Tela de Cadastro</title>
     </head>
     <body>
-        <div class="container">
-            <form action="/login" class="form-contact" method="post" tabindex="1">
-                <input type="text" class="form-contact-input" name="ssid" placeholder="SSID" required />
-                <input type="password" class="form-contact-input" name="password" placeholder="Senha" required />
-                <button type="submit" class="form-button">Enviar</button>
-            </form>
+        <div class="container" style="color: white;">
+            <center>
+                <h1 style="color: white;">Login com sucesso!</h1>
+                <h3 style="color: white;">Configure o seletor para a posição 'Ativo' e reinicie o sistema</h3>
+                <h4 style="color: white;">Seus dados:</h4>
+                <table id="data">
+                    <tr>
+                        <th>SSID</th> 
+                        <td><center>{{ settings["SSID"] }}</center></th> 
+                    </tr>
+                    <tr>
+                        <th>Senha</th> 
+                        <td><center>******</center></th> 
+                    </tr>
+                    <tr>
+                        <th>Host</th> 
+                        <td><center>{{ settings["HOST"] }}</center></th> 
+                    </tr>
+                    <tr>
+                        <th>Nome de usuário</th> 
+                        <td><center>{{ settings["USERNAME"] }}</center></th> 
+                    </tr>
+                    <tr>
+                        <th>Senha</th> 
+                        <td><center>******</center></th> 
+                    </tr>
+                </table>
+            </center>
         </div>
         <div class="row">
             <div class="col-xs-12 col-md-8 offset-md-2 block border">
                 <div class="wrapper-progressBar">
                     <ul class="progressBar">
                         <li class="active">Configurando a rede</li>
-                        <li>Configurando login</li>
-                        <li>Sistema configurado!</li>
+                        <li class="active">Configurando login</li>
+                        <li class="active">Sistema configurado!</li>
                     </ul>
                 </div>
             </div>

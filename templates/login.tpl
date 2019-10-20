@@ -121,8 +121,9 @@
     </head>
     <body>
         <div class="container">
-            <form action="/login" class="form-contact" method="post" tabindex="1">
-                <input type="text" class="form-contact-input" name="ssid" placeholder="SSID" required />
+            <form action="/success" class="form-contact" method="post" tabindex="1">
+                <input type="text" class="form-contact-input" name="host" value="gabrielmelo.ddns.net:8081" placeholder="Host (e.g., 'www.domopen.net:8081')" required />
+                <input type="text" class="form-contact-input" name="username" placeholder="Nome de usuário" required />
                 <input type="password" class="form-contact-input" name="password" placeholder="Senha" required />
                 <button type="submit" class="form-button">Enviar</button>
             </form>
@@ -132,7 +133,7 @@
                 <div class="wrapper-progressBar">
                     <ul class="progressBar">
                         <li class="active">Configurando a rede</li>
-                        <li>Configurando login</li>
+                        <li class="active">Configurando login</li>
                         <li>Sistema configurado!</li>
                     </ul>
                 </div>
