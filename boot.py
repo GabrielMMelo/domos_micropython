@@ -4,8 +4,13 @@
 #import webrepl
 #webrepl.start()
 
-import network
-sta_if = network.WLAN(network.STA_IF)
-sta_if.active(True)
-sta_if.connect('zezinho', 'JoseAnjo43')
-sta_if.ifconfig()
+from constants import MAC_ADDRESS
+from settings import read_settings
+from wifi import AP, STA
+
+_settings = read_settings()
+
+STA.disconnect()
+AP.disconnect()
+
+AP.configure(MAC_ADDRESS, "12345678")

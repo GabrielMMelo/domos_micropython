@@ -12,8 +12,9 @@ from constants import (
     MODE_PIN,
     MAC_ADDRESS,
 )
-
 from settings import write_settings, read_settings
+from wifi import STA, AP
+
 
 '''
 test = {
@@ -43,10 +44,19 @@ def index(req, resp):
         yield from req.read_form_data()
         settings["SSID"] = req.form["ssid"]
         settings["SSID_PASSWORD"] = req.form["password"]
-
         write_settings(settings)
 
-        yield from app.render_template(resp, "login.tpl", args=(req,))
+        STA.connect()
+        STA.configure(settings["SSID"], settings["SSID_PASSWORD"])
+
+        # try to connect to sta and test connection
+        # TODO: a delay here?
+
+        if STA.is_connected():
+            yield from app.render_template(resp, "login.tpl", args=(req,))
+        else:
+            error = "rede"
+            yield from app.render_template(resp, "error.tpl", args=(error,))
 
     else:
         yield from app.render_template(resp, "404.tpl")
@@ -191,11 +201,15 @@ int_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=toggle_state)
 
 if mode_pin.value():
     print("### WEBSERVER MODE ###")
-    # TODO: iniciar AP MODE
+    AP.connect()
     app.run(debug=True, host='0.0.0.0', port='80')
 
 else:
-    print("### WEBSERVER MODE ###")
+    print("### NODE MODE ###")
+
+    STA.connect()
+    STA.configure(settings["SSID"], settings["SSID_PASSWORD"])
+    # TODO: improve flow here
     while not login():
         pass
     print("TOKEN", token)
