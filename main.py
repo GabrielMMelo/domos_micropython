@@ -31,8 +31,10 @@ app = picoweb.WebApp(__name__)
 
 @app.route("/")
 def index(req, resp):
+    global settings
     yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "index.tpl", args=(req,))
+
+    yield from app.render_template(resp, "index.tpl", args=(settings,))
 
 @app.route("/login")
 def index(req, resp):

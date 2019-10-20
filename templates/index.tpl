@@ -1,4 +1,4 @@
-{% args req %}
+{% args settings %}
 <html lang="pt">
     <head>
         <style rel="stylesheet" type="text/css">
@@ -124,9 +124,9 @@
     <body>
         <div class="container">
             <form action="/login" class="form-contact" method="post" tabindex="1">
-                <input type="text" class="form-contact-input" name="ssid" placeholder="SSID" required />
-                <input type="password" class="form-contact-input" name="password" placeholder="Senha" required />
-                <button type="submit" class="form-button">Enviar</button>
+                <input type="text" class="form-contact-input" value="{{ settings.get("SSID", '') }}" name="ssid" placeholder="SSID" required />
+                <input type="password" class="form-contact-input" value="{{ settings.get("SSID_PASSWORD", '') }}" name="password" placeholder="Senha" required />
+                <button type="submit" class="form-button">Salvar</button>
             </form>
         </div>
         <div class="row">
