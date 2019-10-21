@@ -2,7 +2,7 @@
     <head>
         <style rel="stylesheet" type="text/css">
             body{
-                background-color: #5382e8;
+                background-color: cadetblue;
                 font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
             }
             .container {

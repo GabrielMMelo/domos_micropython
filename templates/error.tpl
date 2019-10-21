@@ -3,7 +3,7 @@
     <head>
         <style rel="stylesheet" type="text/css">
             body{
-                background-color: #5382e8;
+                background-color: cadetblue;
                 font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
             }
             .container {
@@ -61,18 +61,18 @@
             }
 
             .progressBar li.active {
-                color: #001d68;
+                color: #3f696b;
                 font-weight: bold;
                 font-size: 22px;
             }
 
             .progressBar li.active:before {
-                border-color: #001d68;
-                background-color: #001d68;
+                border-color: #3f696b;
+                background-color: #3f696b;
             }
 
             .progressBar .active:after {
-                background-color: #001d68;
+                background-color: #3f696b;
             } 
 
             .progressBar li.error {
