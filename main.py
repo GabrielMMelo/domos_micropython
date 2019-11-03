@@ -95,7 +95,7 @@ def login():
     """ Log in through the REST api and get the valid token """
     global token
 
-    url = 'https://' + settings["HOST"] + '/api/v1/auth/login/'
+    url = 'http://' + settings["HOST"] + '/api/v1/auth/login/'
     data = {
         "email": settings["EMAIL"],
         "password": settings["PASSWORD"]
@@ -114,12 +114,12 @@ def login():
 def get_device_id():
     """ 
     Get the device id from the given user (token) and mac address from the REST api.
-    If the device doesnt exists, it will be created and its id returned too.
+    If the device doesnt exists, it'll be created and its id returned too.
     """
     global device_id
     global token
 
-    url = 'https://' + settings["HOST"] + '/api/v1/device/'
+    url = 'http://' + settings["HOST"] + '/api/v1/device/'
     data = {
         "mac": MAC_ADDRESS,
         "name": settings.get("DVC_NAME", 'Generic')
@@ -148,12 +148,14 @@ def connect_ws():
     while not websocket:
         try:
             websocket = uwebsockets.client.connect(
-                'wss://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
+                'ws://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
             )
 
             message = {
                 'state': output_pin.value(),
-                'token': token
+                'token': token,
+                # sends mac in order to identify connection as a node connection 
+                'mac': MAC_ADDRESS
             }
 
             websocket.send(json.dumps(message))  # send message when connect to be authenticated
@@ -174,6 +176,7 @@ def toggle_state(toggler):
         try:
             websocket.send(json.dumps(message))
         except Exception as e:
+            connect_ws()
             print("ERROR", e)
 
 
@@ -189,7 +192,11 @@ def wait_4_messages():
                 print("Message (from ws):", state)
                 print("Old pin value:", output_pin.value())
                 output_pin.value(state)
-        except (TypeError, ValueError):  # needed to avoid None return while interrupt handler is working
+        # ValueError & TypeError:
+        #   needed to avoid None return while interrupt handler is working
+        # KeyError:
+        #   needed to ignore when message has not `state` (when sharing `node_connected`)
+        except (KeyError, TypeError, ValueError):  
             pass
 
 
