@@ -124,8 +124,8 @@
     <body>
         <div class="container">
             <form action="/finish" class="form-contact" method="post" tabindex="1">
-                <input type="text" class="form-contact-input" name="host" value="gabrielmelo.ddns.net:8081" placeholder="Host (e.g., 'www.domopen.net:8081')" required />
-                <input type="text" class="form-contact-input" name="username" placeholder="Nome de usuário" required />
+                <input type="text" class="form-contact-input" name="host" value="domos.icu" placeholder="Host (e.g., 'www.domopen.net:8081')" required />
+                <input type="email" class="form-contact-input" name="email" placeholder="E-mail" required />
                 <input type="password" class="form-contact-input" name="password" placeholder="Senha" required />
                 <button type="submit" class="form-button">Enviar</button>
             </form>

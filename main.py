@@ -19,11 +19,7 @@ from wifi import STA, AP
 
 '''
 test = {
-    "HOST": "gabrielmelo.ddns.net:8081",
-    "SSID": "zezinho",
-    "PASSWD_NET": "JoseAnjo43",
-    "USERNAME": "admin",
-    "PASSWORD": "@admin03OTM",
+    ...
 }
 
 write_settings(test)
@@ -68,7 +64,7 @@ def index(req, resp):
     if req.method == "POST":
         yield from req.read_form_data()
         settings["HOST"] = req.form["host"]
-        settings["USERNAME"] = req.form["username"]
+        settings["EMAIL"] = req.form["email"]
         settings["PASSWORD"] = req.form["password"]
 
         write_settings(settings)
@@ -99,9 +95,9 @@ def login():
     """ Log in through the REST api and get the valid token """
     global token
 
-    url = 'http://' + settings["HOST"] + '/api/v1/auth/login/'
+    url = 'https://' + settings["HOST"] + '/api/v1/auth/login/'
     data = {
-        "username": settings["USERNAME"],
+        "email": settings["EMAIL"],
         "password": settings["PASSWORD"]
     }
     headers = {
@@ -123,7 +119,7 @@ def get_device_id():
     global device_id
     global token
 
-    url = 'http://' + settings["HOST"] + '/api/v1/device/'
+    url = 'https://' + settings["HOST"] + '/api/v1/device/'
     data = {
         "mac": MAC_ADDRESS,
         "name": settings.get("DVC_NAME", 'Generic')
@@ -152,7 +148,7 @@ def connect_ws():
     while not websocket:
         try:
             websocket = uwebsockets.client.connect(
-                'ws://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
+                'wss://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
             )
 
             message = {
@@ -193,7 +189,7 @@ def wait_4_messages():
                 print("Message (from ws):", state)
                 print("Old pin value:", output_pin.value())
                 output_pin.value(state)
-        except TypeError:  # needed to avoid None return while interrupt handler is working
+        except (TypeError, ValueError):  # needed to avoid None return while interrupt handler is working
             pass
 
 

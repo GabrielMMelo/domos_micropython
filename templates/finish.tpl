@@ -143,8 +143,8 @@
                         <td><center>{{ settings["HOST"] }}</center></th> 
                     </tr>
                     <tr>
-                        <th>Nome de usuário</th> 
-                        <td><center>{{ settings["USERNAME"] }}</center></th> 
+                        <th>Endereço de e-mail</th> 
+                        <td><center>{{ settings["EMAIL"] }}</center></th> 
                     </tr>
                     <tr>
                         <th>Senha</th> 
