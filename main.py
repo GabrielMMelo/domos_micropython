@@ -95,7 +95,7 @@ def login():
     """ Log in through the REST api and get the valid token """
     global token
 
-    url = 'http://' + settings["HOST"] + '/api/v1/auth/login/'
+    url = 'https://' + settings["HOST"] + '/api/v1/auth/login/'
     data = {
         "email": settings["EMAIL"],
         "password": settings["PASSWORD"]
@@ -119,7 +119,7 @@ def get_device_id():
     global device_id
     global token
 
-    url = 'http://' + settings["HOST"] + '/api/v1/device/'
+    url = 'https://' + settings["HOST"] + '/api/v1/device/'
     data = {
         "mac": MAC_ADDRESS,
         "name": settings.get("DVC_NAME", 'Generic')
@@ -148,7 +148,7 @@ def connect_ws():
     while not websocket:
         try:
             websocket = uwebsockets.client.connect(
-                'ws://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
+                'wss://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
             )
 
             message = {
@@ -215,9 +215,7 @@ else:
     # TODO: improve flow here
     while not login():
         pass
-    print("TOKEN", token)
     while not get_device_id():
         pass
-    print("Device id", device_id)
     connect_ws()
     wait_4_messages()
