@@ -13,4 +13,4 @@ _settings = read_settings()
 STA.disconnect()
 AP.disconnect()
 
-AP.configure(MAC_ADDRESS, "12345678")
+AP.configure('DOMOS:' + MAC_ADDRESS[9:0], "12345678")

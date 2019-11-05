@@ -19,7 +19,11 @@ from wifi import STA, AP
 
 '''
 test = {
-    ...
+    "HOST": "191.53.162.178:8080",
+    "EMAIL": "gabrielmarquesm@estudante.ufla.br",
+    "PASSWORD": "pop123po",
+    "SSID": "zezinho",
+    "SSID_PASSWORD": "JoseAnjo43",
 }
 
 write_settings(test)
@@ -70,7 +74,7 @@ def index(req, resp):
         write_settings(settings)
 
         if login():
-            print("Login realizado com sucesso", token)
+            print("Login realizado com sucesso")
             yield from app.render_template(resp, "finish.tpl", args=(settings,))
         else:
             error = "login"
@@ -95,7 +99,7 @@ def login():
     """ Log in through the REST api and get the valid token """
     global token
 
-    url = 'https://' + settings["HOST"] + '/api/v1/auth/login/'
+    url = 'http://' + settings["HOST"] + '/api/v1/auth/login/'
     data = {
         "email": settings["EMAIL"],
         "password": settings["PASSWORD"]
@@ -119,10 +123,10 @@ def get_device_id():
     global device_id
     global token
 
-    url = 'https://' + settings["HOST"] + '/api/v1/device/'
+    url = 'http://' + settings["HOST"] + '/api/v1/device/'
     data = {
         "mac": MAC_ADDRESS,
-        "name": settings.get("DVC_NAME", 'Generic')
+        "name": 'NODE ' + MAC_ADDRESS[9:]
     }
 
     headers = {
@@ -148,7 +152,7 @@ def connect_ws():
     while not websocket:
         try:
             websocket = uwebsockets.client.connect(
-                'wss://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
+                'ws://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
             )
 
             message = {
