@@ -1,33 +1,27 @@
 import gc
-import json
-import time
-import urequests as requests
-from machine import Pin
-
-import uwebsockets.client
 import picoweb
-
+gc.collect()
+import uwebsockets.client
+gc.collect()
+import json
+gc.collect()
+import time
+gc.collect()
+import urequests as requests
+gc.collect()
+from machine import Pin
+gc.collect()
 from constants import (
     OUTPUT_PIN,
     INT_PIN,
     MODE_PIN,
     MAC_ADDRESS,
 )
+gc.collect()
 from settings import write_settings, read_settings
+gc.collect()
 from wifi import STA, AP
-
-
-'''
-test = {
-    "HOST": "191.53.162.178:8080",
-    "EMAIL": "gabrielmarquesm@estudante.ufla.br",
-    "PASSWORD": "pop123po",
-    "SSID": "zezinho",
-    "SSID_PASSWORD": "JoseAnjo43",
-}
-
-write_settings(test)
-'''
+gc.collect()
 
 app = picoweb.WebApp(__name__)
 
@@ -79,13 +73,11 @@ def index(req, resp):
         else:
             error = "login"
             yield from app.render_template(resp, "error.tpl", args=(error,))
-
-
     else:
         yield from app.render_template(resp, "404.tpl")
 
 settings = read_settings()
-print("SETTINGS", settings)
+print("SETS", settings)
 
 websocket = False
 token = None
@@ -99,7 +91,7 @@ def login():
     """ Log in through the REST api and get the valid token """
     global token
 
-    url = 'http://' + settings["HOST"] + '/api/v1/auth/login/'
+    url = 'https://' + settings["HOST"] + '/api/v1/auth/login/'
     data = {
         "email": settings["EMAIL"],
         "password": settings["PASSWORD"]
@@ -111,7 +103,6 @@ def login():
         r = requests.post(url=url, headers=headers, json=data)
         token = r.json()["key"]
     except Exception as e:
-        # print(e)
         return False
     return True
 
@@ -123,7 +114,8 @@ def get_device_id():
     global device_id
     global token
 
-    url = 'http://' + settings["HOST"] + '/api/v1/device/'
+    url = 'https://' + settings["HOST"] + '/api/v1/device/'
+    print("dvc_id MAC", MAC_ADDRESS)
     data = {
         "mac": MAC_ADDRESS,
         "name": 'NODE ' + MAC_ADDRESS[9:]
@@ -137,7 +129,7 @@ def get_device_id():
     try:
         r = requests.post(url=url, headers=headers, json=data)
     except Exception as e:
-        # print(e)
+        print("dvc_id err")
         return False
     device_id = r.json()["id"]
     return True
@@ -152,7 +144,7 @@ def connect_ws():
     while not websocket:
         try:
             websocket = uwebsockets.client.connect(
-                'ws://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
+                'wss://' + settings['HOST'] + '/ws/device/{}/'.format(device_id)
             )
 
             message = {
@@ -164,6 +156,7 @@ def connect_ws():
 
             websocket.send(json.dumps(message))  # send message when connect to be authenticated
         except OSError:
+            print("cnt_ws err")
             websocket = False
 
 
@@ -181,7 +174,7 @@ def toggle_state(toggler):
             websocket.send(json.dumps(message))
         except Exception as e:
             connect_ws()
-            print("ERROR", e)
+            print(e)
 
 
 def wait_4_messages():
@@ -193,8 +186,7 @@ def wait_4_messages():
         try:
             state = int(json.loads(message)['state'])
             if state != int(output_pin.value()):
-                print("Message (from ws):", state)
-                print("Old pin value:", output_pin.value())
+                print("ws msg", state)
                 output_pin.value(state)
         # ValueError & TypeError:
         #   needed to avoid None return while interrupt handler is working
@@ -209,7 +201,7 @@ int_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=toggle_state)
 if mode_pin.value():
     print("### WEBSERVER MODE ###")
     AP.connect()
-    app.run(debug=True, host='0.0.0.0', port='80')
+    app.run(debug=True, host='0.0.0.0', port=80)
 
 else:
     print("### NODE MODE ###")
@@ -219,7 +211,10 @@ else:
     # TODO: improve flow here
     while not login():
         pass
+    print("login ok")
     while not get_device_id():
         pass
+    print("id ok")
     connect_ws()
+    print("ws ok")
     wait_4_messages()
