@@ -28,6 +28,7 @@ class Ap():
         return self.ap_if.ifconfig()
 
     def configure(self, essid, password):
+        self.connect()
         self.ap_if.config(authmode=3, essid=essid, password=password)
 
     def connect(self):
