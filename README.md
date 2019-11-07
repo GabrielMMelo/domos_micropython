@@ -55,10 +55,13 @@ esptool.py --port /dev/TTY_PORT --baud 115200 write_flash -z 0x1000 FIRMWARE_PAT
 git clone https://github.com/GabrielMMelo/domos-micropython
 cd domos-micropython/
 ```
-#### Copy all files from this repo to your recent MicroPython ESP8266 port modules folder
+#### Copy all files* from this repo to your recent MicroPython ESP8266 port modules folder
 ```shell
-mv ./* ../micropython/ports/esp8266/modules/.
+cp -r ./* ../micropython/ports/esp8266/modules/.
+rm ../micropython/ports/esp8266/modules/README.md
 ```
+
+> * except `README.md` 
 
 #### Build and Deploy the firmware
 ```shell
