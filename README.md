@@ -3,7 +3,7 @@
 # DOMOS
 > Domotics Open Source project
 
-This project was splitted out in 4 repositories:
+This project was splitted out on 4 repositories:
 - [API REST (ASGI/WSGI) application](https://github.com/GabrielMMelo/domos_api.git) - Nginx, Daphne, Gunicorn, Django, DRF, Django Channels, PostgreSQL & Redis 
 - [Front-end Web application](https://github.com/GabrielMMelo/pyiot-fe.git) - React & Material UI
 - [Front-end Mobile application](https://github.com/GabrielMMelo/pyiot-fe.git) - React-Native 
